@@ -3,6 +3,7 @@ from generate import generate, client, MODEL
 from guardrails import check_refused_appropriately, check_groundedness
 from cache import SemanticCache
 from retrieve import embedder  
+from generate import gateway
 
 cache = SemanticCache(embedder, similarity_threshold=0.2)
 def ask(question: str):
@@ -36,6 +37,7 @@ if __name__ == "__main__":
     while True:
         question = input("You: ").strip()
         if question.lower() in ("quit", "exit"):
+            gateway.summary()
             break
         if not question:
             continue
