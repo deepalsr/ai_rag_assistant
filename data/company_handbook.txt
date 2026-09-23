@@ -1,0 +1,19 @@
+EMPLOYEE HANDBOOK - NovaTech Solutions
+
+SECTION 1: REMOTE WORK POLICY
+NovaTech employees may work remotely up to 3 days per week. Remote work requests must be approved by your direct manager at least 48 hours in advance. Employees working remotely are expected to be available on Slack during core hours of 10 AM to 4 PM local time. Equipment stipends of $500 per year are provided for home office setup, covering items like monitors, chairs, and keyboards.
+
+SECTION 2: LEAVE POLICY
+Full-time employees accrue 18 days of paid time off (PTO) per year, accrued monthly at a rate of 1.5 days per month. PTO requests should be submitted through the HR portal at least 2 weeks in advance for planned leave. Sick leave is separate from PTO and totals 10 days per year, not requiring advance notice. Unused PTO up to 5 days may be carried over to the following year; anything beyond that is forfeited.
+
+SECTION 3: EXPENSE REIMBURSEMENT
+Employees may submit expense reports for business-related purchases within 30 days of the expense. Reports must include itemized receipts. Approved categories include client meals (up to $75 per person), travel, and software subscriptions under $50/month that are pre-approved by a manager. Reimbursements are processed within 10 business days via direct deposit.
+
+SECTION 4: PERFORMANCE REVIEWS
+Performance reviews occur twice yearly, in June and December. Reviews are based on a 5-point rating scale and include self-assessment, peer feedback, and manager evaluation. Employees rated 4 or above are eligible for the annual bonus pool. Promotion cycles align with the December review period only.
+
+SECTION 5: EQUIPMENT AND IT POLICY
+All employees receive a company laptop upon joining, refreshed every 3 years. IT support is available via the #it-helpdesk Slack channel with a 4-hour SLA during business hours. Lost or damaged equipment due to negligence may result in a deduction from the equipment stipend of the following year.
+
+SECTION 6: PARENTAL LEAVE
+NovaTech offers 16 weeks of fully paid parental leave for the primary caregiver and 8 weeks for the secondary caregiver, applicable to birth, adoption, or fostering. Leave must be taken within 12 months of the qualifying event and can be split into two blocks with manager approval.
