@@ -1,12 +1,18 @@
 import os
 from dotenv import load_dotenv
 from groq import Groq
+from gateway import RateLimiter, LLMGateway
 
 load_dotenv()
 
 client = Groq(api_key=os.environ["GROQ_API_KEY"])
 MODEL = "openai/gpt-oss-20b"
-
+rate_limiter = RateLimiter(max_calls=20, per_seconds=60)  # 20 calls per minute, adjust as needed
+gateway = LLMGateway(
+    client=client,
+    models=["openai/gpt-oss-20b", "openai/gpt-oss-120b"],  # primary, then fallback
+    rate_limiter=rate_limiter,
+)
 def generate(question: str, chunks: list[dict]) -> str:
     """
     Take retrieved chunks (as returned by retrieve.py) and ask the LLM
@@ -23,13 +29,8 @@ Question: {question}
 
 Answer:"""
 
-    response = client.chat.completions.create(
-        model=MODEL,
-        messages=[{"role": "user", "content": prompt}],
-        temperature=0.1,
-    )
-
-    return response.choices[0].message.content
+    result = gateway.call(prompt, temperature=0.1)
+    return result["text"]
 
 
 if __name__ == "__main__":
