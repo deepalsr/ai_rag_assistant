@@ -2,6 +2,7 @@ import os
 import pickle
 import chromadb
 from embeddings import TfidfEmbedder
+from embeddings import NeuralEmbedder
 
 DATA_DIR = os.path.join(os.path.dirname(__file__), "..", "data")
 DB_DIR = os.path.join(os.path.dirname(__file__), "..", "chroma_db")
@@ -45,8 +46,7 @@ def main():
     print(f"Total chunks: {len(all_chunks)}")
 
     # 2. Fit the embedder on this corpus, save it to disk
-    embedder = TfidfEmbedder()
-    embedder.fit(all_chunks)
+    embedder = NeuralEmbedder()
 
     os.makedirs(DB_DIR, exist_ok=True)
     with open(EMBEDDER_PATH, "wb") as f:

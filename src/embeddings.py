@@ -1,5 +1,6 @@
 from sklearn.feature_extraction.text import TfidfVectorizer
 import numpy as np
+from sentence_transformers import SentenceTransformer
 
 
 class TfidfEmbedder:
@@ -35,3 +36,27 @@ class TfidfEmbedder:
 
     def name(self) -> str:
         return "tfidf_custom"
+
+class NeuralEmbedder:
+    def __init__(self, model_name: str = "all-MiniLM-L6-v2"):
+        self.model = SentenceTransformer(model_name)
+
+    def _embed(self, texts: list[str]) -> list[list[float]]:
+        vectors = self.model.encode(texts, convert_to_numpy=True)
+        return vectors.tolist()
+
+    def __call__(self, input: list[str]) -> list[list[float]]:
+        return self._embed(input)
+
+    def embed_documents(self, input: list[str]) -> list[list[float]]:
+        return self._embed(input)
+
+    def embed_query(self, input) -> list[list[float]]:
+        if isinstance(input, str):
+            texts = [input]
+        else:
+            texts = input
+        return self._embed(texts)
+
+    def name(self) -> str:
+        return "neural_minilm"

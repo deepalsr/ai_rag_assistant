@@ -1,7 +1,7 @@
 import os
 import pickle
 import chromadb
-
+from embeddings import TfidfEmbedder, NeuralEmbedder
 DB_DIR = os.path.join(os.path.dirname(__file__), "..", "chroma_db")
 EMBEDDER_PATH = os.path.join(DB_DIR, "embedder.pkl")
 
