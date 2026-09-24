@@ -1,22 +1,32 @@
-from retrieve import retrieve
-from generate import generate, client, MODEL
+"""
+MAIN — the chat loop
+----------------------
+Ties together: semantic cache -> retrieval -> grounded generation
+(with conversation memory) -> guardrail checks -> caching the result.
+"""
+
+from retrieve import retrieve, embedder
+from generate import generate, client, MODEL, gateway
 from guardrails import check_refused_appropriately, check_groundedness
 from cache import SemanticCache
-from retrieve import embedder  
-from generate import gateway
+from memory import ConversationMemory
 
 cache = SemanticCache(embedder, similarity_threshold=0.2)
+memory = ConversationMemory(max_turns=5)
+
+
 def ask(question: str):
-    # 1. Check cache first
+    # 1. Check semantic cache first - skip everything else on a hit
     cached = cache.lookup(question)
     if cached:
         print(f"⚡ [cache hit] matched: \"{cached['matched_question']}\" (score={cached['score']:.3f})")
         return cached["answer"], []
 
-    # 2. Cache miss — do the real retrieve + generate work
+    # 2. Cache miss - retrieve relevant chunks, generate a grounded answer
     chunks = retrieve(question)
-    answer = generate(question, chunks)
+    answer = generate(question, chunks, memory=memory)
 
+    # 3. Guardrail checks on the fresh answer
     refused_ok = check_refused_appropriately(question, chunks, answer)
     if not refused_ok:
         print("⚠️  [guardrail] Model may have answered without sufficient context")
@@ -25,8 +35,9 @@ def ask(question: str):
     if not ground_check["grounded"]:
         print(f"⚠️  [guardrail] Answer may not be fully grounded (verdict: {ground_check['raw_verdict']})")
 
-    # 3. Store for next time
+    # 4. Only commit a validated answer to cache + memory
     cache.store(question, answer)
+    memory.add(question, answer)
 
     return answer, chunks
 
