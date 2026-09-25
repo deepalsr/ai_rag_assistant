@@ -11,22 +11,26 @@ from guardrails import check_refused_appropriately, check_groundedness
 from cache import SemanticCache
 from memory import ConversationMemory
 
-cache = SemanticCache(embedder, similarity_threshold=0.2)
+cache = SemanticCache(embedder, similarity_threshold=0.45)
 memory = ConversationMemory(max_turns=5)
 
 
 def ask(question: str):
-    # 1. Check semantic cache first - skip everything else on a hit
-    cached = cache.lookup(question)
-    if cached:
-        print(f"⚡ [cache hit] matched: \"{cached['matched_question']}\" (score={cached['score']:.3f})")
-        return cached["answer"], []
-
-    # 2. Cache miss - retrieve relevant chunks, generate a grounded answer
+    # 1. Retrieve FIRST now - we need chunk IDs to check the cache properly
     chunks = retrieve(question)
+    chunk_ids = {f"{c['source']}-{c.get('chunk_index', c['text'][:20])}" for c in chunks}
+
+    # 2. Now check cache using both similarity AND chunk overlap
+    cached = cache.lookup(question, chunk_ids)
+    if cached:
+        print(f"⚡ [cache hit] matched: \"{cached['matched_question']}\" "
+              f"(score={cached['score']:.3f}, overlap={cached['overlap_ratio']:.2f})")
+        return cached["answer"], chunks
+
+    # 3. Cache miss - generate a grounded answer
     answer = generate(question, chunks, memory=memory)
 
-    # 3. Guardrail checks on the fresh answer
+    # 4. Guardrail checks
     refused_ok = check_refused_appropriately(question, chunks, answer)
     if not refused_ok:
         print("⚠️  [guardrail] Model may have answered without sufficient context")
@@ -35,8 +39,8 @@ def ask(question: str):
     if not ground_check["grounded"]:
         print(f"⚠️  [guardrail] Answer may not be fully grounded (verdict: {ground_check['raw_verdict']})")
 
-    # 4. Only commit a validated answer to cache + memory
-    cache.store(question, answer)
+    # 5. Store with chunk IDs this time
+    cache.store(question, answer, chunk_ids)
     memory.add(question, answer)
 
     return answer, chunks
