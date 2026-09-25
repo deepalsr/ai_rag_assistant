@@ -12,7 +12,7 @@ with open(EMBEDDER_PATH, "rb") as f:
 
 collection = client.get_collection(name="handbook", embedding_function=embedder)
 
-def retrieve(query: str, top_k: int = 3) -> list[dict]:
+def retrieve(query: str, top_k: int = 2) -> list[dict]:
     """
     Embed the query, find the top_k nearest chunks, return them
     with their source and similarity distance.
