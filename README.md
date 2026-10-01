@@ -96,3 +96,26 @@ Built sprint-by-sprint, debugging real issues as they came up rather than follow
 - Calibrating thresholds empirically instead of guessing
 - Diagnosing a parameter interaction (chunk size × `top_k`) that shifted system behavior in an unexpected direction
 - Using an eval suite to catch a regression that manual spot-testing missed entirely
+
+### `chunk_text`
+
+Splits text into chunks along sentence boundaries, ensuring chunks are small enough to keep unrelated facts separate while maintaining context between chunks.
+
+**Signature:**
+```python
+def chunk_text(
+    text: str,
+    max_chunk_size: int = 300,
+    overlap_sentences: int = 1,
+    min_chunk_size: int = 50
+) -> list[str]
+```
+
+**Arguments:**
+* `text` (str): The input text to split.
+* `max_chunk_size` (int): The maximum character size of a chunk. Defaults to `300`.
+* `overlap_sentences` (int): The number of sentences from the end of one chunk to carry over to the start of the next. Defaults to `1`.
+* `min_chunk_size` (int): The minimum character size for the final chunk. If the trailing fragment is smaller than this, it is merged into the previous chunk. Defaults to `50`.
+
+**Returns:**
+* `list[str]`: A list of text chunks.
