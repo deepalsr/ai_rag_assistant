@@ -9,16 +9,15 @@ DATA_DIR = os.path.join(os.path.dirname(__file__), "..", "data")
 DB_DIR = os.path.join(os.path.dirname(__file__), "..", "chroma_db")
 EMBEDDER_PATH = os.path.join(DB_DIR, "embedder.pkl")
 
-def chunk_text(text: str, max_chunk_size: int = 300, overlap_sentences: int = 1) -> list[str]:
+def chunk_text(text: str, max_chunk_size: int = 300, overlap_sentences: int = 1, min_chunk_size: int = 50) -> list[str]:
     """
     Split text into chunks along SENTENCE boundaries (not raw character
     cuts), keeping chunks small enough that unrelated facts don't end up
     sharing a chunk. overlap_sentences carries the last N sentences of
     one chunk into the start of the next, so context isn't lost at the seam.
+    min_chunk_size discards a trailing fragment that's too small to carry
+    standalone meaning, merging it into the previous chunk instead.
     """
-    # Split on sentence-ending punctuation followed by whitespace.
-    # Simple heuristic - not perfect (won't handle "Dr. Smith" correctly),
-    # but good enough for our formal policy-text handbook.
     sentences = re.split(r'(?<=[.!?])\s+', text.strip())
     sentences = [s.strip() for s in sentences if s.strip()]
 
@@ -32,15 +31,17 @@ def chunk_text(text: str, max_chunk_size: int = 300, overlap_sentences: int = 1)
 
         if current_length >= max_chunk_size:
             chunks.append(" ".join(current_chunk))
-            # Keep the last N sentences as overlap into the next chunk
             current_chunk = current_chunk[-overlap_sentences:] if overlap_sentences else []
             current_length = sum(len(s) for s in current_chunk)
 
     if current_chunk:
-        chunks.append(" ".join(current_chunk))
+        final_chunk = " ".join(current_chunk)
+        if len(final_chunk) < min_chunk_size and chunks:
+            chunks[-1] += " " + final_chunk
+        else:
+            chunks.append(final_chunk)
 
     return chunks
-
 def main():
     # 1. Read + chunk every .txt file in data/
     all_chunks = []
