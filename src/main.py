@@ -39,9 +39,14 @@ def ask(question: str):
     if not ground_check["grounded"]:
         print(f"⚠️  [guardrail] Answer may not be fully grounded (verdict: {ground_check['raw_verdict']})")
 
-    # 5. Store with chunk IDs this time
-    cache.store(question, answer, chunk_ids)
-    memory.add(question, answer)
+    # 5. Only cache + remember answers that passed BOTH checks,
+    #    so a flagged answer can't be replayed from cache or pollute memory
+    passed_guardrails = refused_ok and ground_check["grounded"]
+    if passed_guardrails:
+        cache.store(question, answer, chunk_ids)
+        memory.add(question, answer)
+    else:
+        print("🚫 [guardrail] Answer not cached or added to memory")
 
     return answer, chunks
 
