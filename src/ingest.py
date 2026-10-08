@@ -42,6 +42,23 @@ def chunk_text(text: str, max_chunk_size: int = 300, overlap_sentences: int = 1,
             chunks.append(final_chunk)
 
     return chunks
+def chunk_stats(chunks: list[str]) -> dict:
+    """
+    Compute basic size statistics over a list of chunks produced by
+    chunk_text(), useful for sanity-checking a chunking run before it's
+    stored in the vector DB. Returns an empty stats dict for an empty list
+    rather than raising, since "no chunks" is a valid (if unusual) result.
+    """
+    if not chunks:
+        return {"count": 0, "avg_length": 0, "min_length": 0, "max_length": 0}
+
+    lengths = [len(c) for c in chunks]
+    return {
+        "count": len(chunks),
+        "avg_length": sum(lengths) / len(lengths),
+        "min_length": min(lengths),
+        "max_length": max(lengths),
+    }
 def main():
     # 1. Read + chunk every .txt file in data/
     all_chunks = []
