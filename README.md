@@ -119,3 +119,19 @@ def chunk_text(
 
 **Returns:**
 * `list[str]`: A list of text chunks.
+
+### `chunk_stats`
+
+Computes basic size statistics over a list of chunks produced by `chunk_text()`. This is useful for sanity-checking a chunking run before it is stored in the vector database.
+
+**Parameters:**
+* `chunks` (list[str]): A list of text chunks.
+
+**Returns:**
+* `dict`: A dictionary containing the following keys:
+  * `count` (int): The number of chunks.
+  * `avg_length` (float): The average length of the chunks.
+  * `min_length` (int): The minimum chunk length.
+  * `max_length` (int): The maximum chunk length.
+
+If the input list is empty, it returns a dictionary with all values set to 0 instead of raising an error.
